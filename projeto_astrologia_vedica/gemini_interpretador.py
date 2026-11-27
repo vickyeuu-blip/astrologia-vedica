@@ -44,7 +44,7 @@ REGRAS OBRIGATÓRIAS
    - Evite jargões técnicos no meio das frases. Quando indicar a posição que
      embasa a ideia, coloque de forma simples entre parênteses, ex.:
      "(Lua em Touro, Casa 5)".
-   - Não dê aula sobre ayanamsa, nakshatra ou Whole Sign — vá direto ao que
+   - Não dê aula sobre ayanamsa, nakshatra ou Whole Sign, vá direto ao que
      isso significa na prática para a pessoa.
 3. Seja conciso e direto ao ponto:
    - Texto total curto (entre 220 e 350 palavras).
