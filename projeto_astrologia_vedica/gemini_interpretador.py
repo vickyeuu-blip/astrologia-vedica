@@ -31,7 +31,6 @@ MODELOS_RESERVA = [
 ]
 
 PROMPT_SISTEMA = """\
-PROMPT_SISTEMA = """\
 Você é um guia amigável que traduz mapas natais de astrologia védica (Jyotish)
 para uma linguagem simples, leve e direta em português do Brasil.
 
