@@ -1,0 +1,9 @@
+# Bibliotecas do projeto (instale com:  pip install -r requirements.txt)
+# Use Python 3.11: o pacote pyswisseph só tem instalador pronto até essa versão.
+streamlit>=1.40,<2
+pyswisseph==2.10.3.2
+geopy>=2.4,<3
+timezonefinder>=6.5,<9
+tzdata
+pandas
+google-genai>=1.0
