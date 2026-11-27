@@ -356,3 +356,12 @@ if mapa:
                 mime="application/json",
             )
             st.json(mapa, expanded=1)
+
+
+        texto_json = json.dumps(mapa, ensure_ascii=False, indent=2)
+        st.download_button(
+            "⬇️ Baixar mapa (.json)",
+            data=texto_json,
+            file_name=f"mapa_vedico_{nome_de_arquivo(mapa['pessoa']['nome'])}.json",
+            mime="application/json",
+        )
