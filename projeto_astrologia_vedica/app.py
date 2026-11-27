@@ -113,6 +113,18 @@ except Exception:
 st.markdown('\n<style>\n@import url(\'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap\');\n:root {color-scheme:light;}\n.stApp, [data-testid="stHeader"] {background:#F5F0E7;color:#40382F;}\n.stApp {background-image:radial-gradient(ellipse at top,#FFFCF6 0%,#F5F0E7 65%);}\n.stApp p,.stApp label,.stApp input,.stApp button,.stApp [data-testid="stMarkdownContainer"] {font-family:\'DM Sans\',sans-serif;}\n.stApp h1,.stApp h2,.stApp h3 {font-family:\'Cormorant Garamond\',Georgia,serif;color:#40382F;font-weight:600;}\n.stApp h2 {font-size:2.1rem;}\n.block-container {max-width:850px;padding-top:3rem;padding-bottom:4rem;}\n[data-testid="stForm"] {background:#FFFCF6;border:1px solid #E5DAC6;border-radius:22px;padding:1.7rem;box-shadow:0 10px 35px #40382F0a;}\n[data-testid="stTextInput"] input,[data-testid="stDateInput"] input,[data-testid="stTimeInput"] input {background:#FFFCF6;color:#40382F;}\n[data-baseweb="input"] {border-radius:10px;background:#FFFCF6;border-color:#D8CBB4;}\n.stButton button,.stFormSubmitButton button,.stDownloadButton button {border-radius:10px;border:1px solid #403C50;background:#403C50;color:white;min-height:44px;}\n.stButton button p,.stFormSubmitButton button p,.stDownloadButton button p {color:white;}\n.stButton button:hover,.stFormSubmitButton button:hover {background:#57516A;color:white;border-color:#57516A;}\n.stButton button:disabled {opacity:.45;}\n[data-testid="stExpander"] {background:#FFFCF6;border-radius:12px;}\n[data-baseweb="tab-list"] {gap:12px;background:transparent;}\n[data-baseweb="tab"] {color:#40382F;padding:12px 8px;white-space:normal;}\n[data-baseweb="tab"][aria-selected="true"] {color:#95733F;}\n[data-baseweb="tab-highlight"] {background:#B69A69;}\n[data-testid="stMetric"] {background:#FFFCF6;border:1px solid #E5DAC6;border-radius:14px;padding:12px;}\n[data-testid="stMetricValue"] {font-size:1.1rem;white-space:normal;overflow-wrap:anywhere;}\n.vedic-hero {text-align:center;padding:12px 0 30px;color:#40382F;}\n.vedic-hero .brand {font:600 12px \'DM Sans\',sans-serif;letter-spacing:.25em;color:#95733F;margin:12px 0;}\n.vedic-hero h1 {font-size:clamp(2.5rem,6vw,3.7rem);line-height:1.05;margin:12px 0;}\n.vedic-hero p {color:#756B5D;font-size:1rem;max-width:480px;margin:12px auto;}\n.vedic-hero svg {width:145px;height:145px;}\n@media(max-width:600px){.block-container{padding:2rem 1rem;}[data-testid="stForm"]{padding:1rem;}}\n</style>\n', unsafe_allow_html=True)
 st.markdown('<div class="vedic-hero"><svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#B69A69"><circle cx="90" cy="90" r="83"/><circle cx="90" cy="90" r="65"/><circle cx="90" cy="90" r="44"/><path d="M90 7V46 M90 134V173 M7 90H46 M134 90H173 M31 31L59 59 M121 121L149 149 M31 149L59 121 M121 59L149 31"/><circle cx="90" cy="90" r="19" fill="#B69A69"/><path d="M90 61V68 M90 112V119 M61 90H68 M112 90H119 M69 69L74 74 M106 106L111 111 M69 111L74 106 M106 74L111 69" stroke-width="2"/></svg><div class="brand">ASTROLOGIA VÉDICA</div><h1>Descubra o universo<br>que existe em você.</h1><p>Uma jornada de autoconhecimento através da sabedoria do Jyotish.</p></div>', unsafe_allow_html=True)
 st.caption(
+    st.markdown("""
+<style>
+[data-testid="stHeaderActionElements"],
+a.header-anchor,
+.stApp h1 a,
+.stApp h2 a,
+.stApp h3 a {
+    display: none !important;
+    visibility: hidden !important;
+}
+</style>
+""", unsafe_allow_html=True)
     "Projeto acadêmico. As posições são calculadas astronomicamente com o Swiss "
     "Ephemeris. A astrologia é uma tradição cultural/simbólica e não é "
     "comprovada cientificamente; as interpretações não substituem aconselhamento "
