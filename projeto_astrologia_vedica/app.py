@@ -454,6 +454,19 @@ if mapa:
         st.dataframe(tabela_grahas(mapa), hide_index=True)
         st.subheader("As doze casas (Whole Sign)")
         st.dataframe(tabela_casas(mapa), hide_index=True)
+
+
+
+
+
+
+
+        st.download_button(
+            "⬇️ Baixar mapa em PDF",
+            data=gerar_pdf_mapa(mapa, st.session_state.get("interpretacao")),
+            file_name=f"mapa_vedico_{nome_de_arquivo(mapa['pessoa']['nome'])}.pdf",
+            mime="application/pdf",
+        )
         st.caption(
             f'Ayanamsa Lahiri neste instante: {mapa["configuracao"]["valor_ayanamsa_lahiri_graus"]}° · '
             f'Efeméride: {mapa["metadados"]["efemeride_usada"]}'
