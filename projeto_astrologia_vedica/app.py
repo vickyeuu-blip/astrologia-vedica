@@ -338,12 +338,14 @@ if mapa:
             f'**Ascendente:** {asc["grau_no_signo_dms"]} de {asc["signo"]} · '
             f'Nakshatra {asc["nakshatra"]}, pada {asc["pada"]}'
         )
+                st.subheader("Os nove Grahas")
+        st.dataframe(tabela_grahas(mapa), hide_index=True)
+        st.subheader("As doze casas (Whole Sign)")
+        st.dataframe(tabela_casas(mapa), hide_index=True)
         st.caption(
             f'Ayanamsa Lahiri neste instante: {mapa["configuracao"]["valor_ayanamsa_lahiri_graus"]}° · '
             f'Efeméride: {mapa["metadados"]["efemeride_usada"]}'
         )
-        for aviso in mapa["avisos"]:
-            st.warning(aviso)
 
         with st.expander("Dados técnicos e JSON"):
             texto_json = json.dumps(mapa, ensure_ascii=False, indent=2)
