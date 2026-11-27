@@ -124,7 +124,7 @@ a.header-anchor,
     visibility: hidden !important;
 }
 </style>
-""", unsafe_allow_html=True)
+""" unsafe_allow_html=True)
     "Projeto acadêmico. As posições são calculadas astronomicamente com o Swiss "
     "Ephemeris. A astrologia é uma tradição cultural/simbólica e não é "
     "comprovada cientificamente; as interpretações não substituem aconselhamento "
