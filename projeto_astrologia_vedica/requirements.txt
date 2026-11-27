@@ -7,3 +7,4 @@ timezonefinder>=6.5,<9
 tzdata
 pandas
 google-genai>=1.0
+fpdf2
