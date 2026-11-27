@@ -127,12 +127,7 @@ st.markdown("""
     simbólica sobre sua personalidade, seus talentos e os desafios da vida.
 </p>
 """, unsafe_allow_html=True)
-st.caption(
-    "Projeto acadêmico. As posições são calculadas astronomicamente com o Swiss "
-    "Ephemeris. A astrologia é uma tradição cultural/simbólica e não é "
-    "comprovada cientificamente; as interpretações não substituem aconselhamento "
-    "profissional."
-)
+
 
 # ---------------------------------------------------------------------------
 # ETAPA 1 - dados de nascimento
