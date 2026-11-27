@@ -91,6 +91,118 @@ def tabela_casas(mapa: dict) -> pd.DataFrame:
         })
     return pd.DataFrame(linhas)
 
+def _texto_pdf(texto: object) -> str:
+    """Ajusta caracteres especiais para evitar erro de acentuação na fonte padrão do PDF."""
+    s = str(texto)
+    for orig, sub in {
+        "—": "-",
+        "–": "-",
+        "•": "-",
+        "“": '"',
+        "”": '"',
+        "‘": "'",
+        "’": "'",
+        "…": "...",
+    }.items():
+        s = s.replace(orig, sub)
+    return s.encode("latin-1", "replace").decode("latin-1")
+
+
+def gerar_pdf_mapa(mapa: dict, interpretacao: str | None = None) -> bytes:
+    from fpdf import FPDF
+    from fpdf.fonts import FontFace
+
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
+
+    # Título
+    pdf.set_font("Helvetica", "B", 18)
+    pdf.set_text_color(64, 56, 47)
+    pdf.multi_cell(0, 10, _texto_pdf(f"Mapa Védico (Jyotish) - {mapa['pessoa']['nome']}"))
+    pdf.ln(3)
+
+    # Resumo e Ascendente
+    r = mapa["resumo"]
+    asc = mapa["ascendente"]
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, _texto_pdf("Resumo"), new_x="LMARGIN", new_y="NEXT")
+
+    pdf.set_font("Helvetica", "", 10)
+    resumo_linhas = [
+        f"Lagna (Ascendente): {r['lagna']}",
+        f"Rashi lunar: {r['signo_lunar_rashi']}",
+        f"Nakshatra da Lua: {r['nakshatra_lunar']} (pada {r['pada_lunar']})",
+        f"Signo solar: {r['signo_solar']}",
+        (
+            f"Ascendente: {asc['grau_no_signo_dms']} de {asc['signo']} "
+            f"(Nakshatra {asc['nakshatra']}, pada {asc['pada']})"
+        ),
+    ]
+    for linha in resumo_linhas:
+        pdf.multi_cell(0, 6, _texto_pdf(linha))
+    pdf.ln(4)
+
+    headings_style = FontFace(emphasis="BOLD", color=(255, 255, 255), fill_color=(64, 60, 80))
+    pdf.set_draw_color(216, 203, 180)
+
+    # Tabela dos Grahas
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, _texto_pdf("Os nove Grahas"), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 7.5)
+    df_grahas = tabela_grahas(mapa)
+    with pdf.table(
+        col_widths=(16, 15, 32, 21, 10, 22, 10, 24, 17, 23),
+        headings_style=headings_style,
+        line_height=5,
+    ) as table:
+        row = table.row()
+        for col in df_grahas.columns:
+            row.cell(_texto_pdf(col))
+        for _, linha_df in df_grahas.iterrows():
+            row = table.row()
+            for valor in linha_df:
+                row.cell(_texto_pdf(valor))
+    pdf.ln(5)
+
+    # Tabela das Casas
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(0, 8, _texto_pdf("As doze casas (Whole Sign)"), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 8.5)
+    df_casas = tabela_casas(mapa)
+    with pdf.table(
+        col_widths=(15, 45, 30, 35, 65),
+        headings_style=headings_style,
+        line_height=5.5,
+    ) as table:
+        row = table.row()
+        for col in df_casas.columns:
+            row.cell(_texto_pdf(col))
+        for _, linha_df in df_casas.iterrows():
+            row = table.row()
+            for valor in linha_df:
+                row.cell(_texto_pdf(valor))
+
+    # Interpretação (se já tiver sido gerada)
+    if interpretacao:
+        pdf.add_page()
+        pdf.set_font("Helvetica", "B", 14)
+        pdf.cell(0, 9, _texto_pdf("Interpretação"), new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(2)
+        for linha in interpretacao.splitlines():
+            limpa = linha.strip()
+            if not limpa:
+                pdf.ln(3)
+            elif limpa.startswith("#"):
+                pdf.ln(2)
+                pdf.set_font("Helvetica", "B", 11)
+                pdf.multi_cell(0, 6, _texto_pdf(limpa.lstrip("# ")))
+            else:
+                pdf.set_font("Helvetica", "", 10)
+                pdf.multi_cell(0, 5.5, _texto_pdf(limpa.replace("**", "")))
+
+    return bytes(pdf.output())
+
 
 # ---------------------------------------------------------------------------
 # Estado da sessão (a "memória" da página entre um clique e outro)
