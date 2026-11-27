@@ -119,8 +119,101 @@ def gerar_pdf_mapa(mapa: dict, interpretacao: str | None = None) -> bytes:
     # Título
     pdf.set_font("Helvetica", "B", 18)
     pdf.set_text_color(64, 56, 47)
-    pdf.multi_cell(0, 10, _texto_pdf(f"Mapa Védico (Jyotish) - {mapa['pessoa']['nome']}"))
+    pdf.multi_cell(
+        pdf.epw, 10,
+        _texto_pdf(f"Mapa Védico (Jyotish) - {mapa['pessoa']['nome']}"),
+        new_x="LMARGIN", new_y="NEXT",
+    )
     pdf.ln(3)
+
+    # Resumo e Ascendente
+    r = mapa["resumo"]
+    asc = mapa["ascendente"]
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(pdf.epw, 8, _texto_pdf("Resumo"), new_x="LMARGIN", new_y="NEXT")
+
+    pdf.set_font("Helvetica", "", 10)
+    resumo_linhas = [
+        f"Lagna (Ascendente): {r['lagna']}",
+        f"Rashi lunar: {r['signo_lunar_rashi']}",
+        f"Nakshatra da Lua: {r['nakshatra_lunar']} (pada {r['pada_lunar']})",
+        f"Signo solar: {r['signo_solar']}",
+        (
+            f"Ascendente: {asc['grau_no_signo_dms']} de {asc['signo']} "
+            f"(Nakshatra {asc['nakshatra']}, pada {asc['pada']})"
+        ),
+    ]
+    for linha in resumo_linhas:
+        pdf.multi_cell(pdf.epw, 6, _texto_pdf(linha), new_x="LMARGIN", new_y="NEXT")
+    pdf.ln(4)
+
+    headings_style = FontFace(emphasis="BOLD", color=(255, 255, 255), fill_color=(64, 60, 80))
+    pdf.set_draw_color(216, 203, 180)
+
+    # Tabela dos Grahas
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(pdf.epw, 8, _texto_pdf("Os nove Grahas"), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 7)
+    df_grahas = tabela_grahas(mapa)
+    with pdf.table(
+        col_widths=(16, 16, 30, 20, 13, 21, 12, 24, 18, 20),
+        headings_style=headings_style,
+        line_height=5,
+        padding=1,
+    ) as table:
+        row = table.row()
+        for col in df_grahas.columns:
+            row.cell(_texto_pdf(col))
+        for _, linha_df in df_grahas.iterrows():
+            row = table.row()
+            for valor in linha_df:
+                row.cell(_texto_pdf(valor))
+    pdf.ln(5)
+
+    # Tabela das Casas
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.cell(pdf.epw, 8, _texto_pdf("As doze casas (Whole Sign)"), new_x="LMARGIN", new_y="NEXT")
+    pdf.set_font("Helvetica", "", 8.5)
+    df_casas = tabela_casas(mapa)
+    with pdf.table(
+        col_widths=(15, 45, 30, 35, 65),
+        headings_style=headings_style,
+        line_height=5.5,
+        padding=1.5,
+    ) as table:
+        row = table.row()
+        for col in df_casas.columns:
+            row.cell(_texto_pdf(col))
+        for _, linha_df in df_casas.iterrows():
+            row = table.row()
+            for valor in linha_df:
+                row.cell(_texto_pdf(valor))
+
+    # Interpretação (se já tiver sido gerada)
+    if interpretacao:
+        pdf.add_page()
+        pdf.set_font("Helvetica", "B", 14)
+        pdf.cell(pdf.epw, 9, _texto_pdf("Interpretação"), new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(2)
+        for linha in interpretacao.splitlines():
+            limpa = linha.strip()
+            if not limpa:
+                pdf.ln(3)
+            elif limpa.startswith("#"):
+                pdf.ln(2)
+                pdf.set_font("Helvetica", "B", 11)
+                pdf.multi_cell(
+                    pdf.epw, 6, _texto_pdf(limpa.lstrip("# ")),
+                    new_x="LMARGIN", new_y="NEXT",
+                )
+            else:
+                pdf.set_font("Helvetica", "", 10)
+                pdf.multi_cell(
+                    pdf.epw, 5.5, _texto_pdf(limpa.replace("**", "")),
+                    new_x="LMARGIN", new_y="NEXT",
+                )
+
+    return bytes(pdf.output())
 
     # Resumo e Ascendente
     r = mapa["resumo"]
