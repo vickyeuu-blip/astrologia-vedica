@@ -20,10 +20,15 @@ from __future__ import annotations
 import copy
 import json
 import os
+import time
 
-# Os nomes de modelos do Gemini mudam com frequência. Se este der erro 404,
-# use o botão "Listar modelos disponíveis" no site e troque o nome na barra lateral.
-MODELO_PADRAO = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+# Os nomes de modelos do Gemini mudam com frequência.
+MODELO_PADRAO = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+MODELOS_RESERVA = [
+    "gemini-3.5-flash-lite",
+    "gemini-2.5-flash-lite",
+    "gemini-4-hydrogen",
+]
 
 PROMPT_SISTEMA = """\
 Você é um assistente que explica mapas natais de astrologia védica (Jyotish)
@@ -97,12 +102,13 @@ def _cliente(chave: str):
 def _traduzir_erro(erro: Exception) -> ErroGemini:
     codigo = getattr(erro, "code", None)
     texto = str(erro)
+    print(f"[Gemini] Falha na API | code={codigo} | detalhe={texto}", flush=True)
+
     if codigo in (400, 401, 403) or "API key" in texto:
         return ErroGemini("Chave de API inválida ou sem permissão. Confira a chave.")
     if codigo == 404:
         return ErroGemini(
-            "Modelo não encontrado. Use 'Listar modelos disponíveis' e troque o "
-            "nome do modelo na barra lateral."
+            "Modelo não encontrado. Atualize o modelo configurado no projeto."
         )
     if codigo == 429:
         return ErroGemini(
@@ -128,19 +134,37 @@ def interpretar_mapa(
     else:
         pedido += "Faça a interpretação geral do mapa seguindo o formato indicado."
 
-    try:
-        with _cliente(chave) as cliente:
-            resposta = cliente.models.generate_content(
-                model=modelo,
-                contents=pedido,
-                config=types.GenerateContentConfig(
-                    system_instruction=PROMPT_SISTEMA, temperature=0.4
-                ),
-            )
-    except ErroGemini:
-        raise
-    except Exception as erro:
-        raise _traduzir_erro(erro) from erro
+    fila_modelos = [modelo] + [m for m in MODELOS_RESERVA if m != modelo]
+    ultimo_erro: Exception | None = None
+    resposta = None
+
+    with _cliente(chave) as cliente:
+        for indice, nome_modelo in enumerate(fila_modelos):
+            try:
+                resposta = cliente.models.generate_content(
+                    model=nome_modelo,
+                    contents=pedido,
+                    config=types.GenerateContentConfig(
+                        system_instruction=PROMPT_SISTEMA, temperature=0.4
+                    ),
+                )
+                break
+            except ErroGemini:
+                raise
+            except Exception as erro:
+                ultimo_erro = erro
+                codigo = getattr(erro, "code", None)
+                print(
+                    f"[Gemini] Erro no modelo '{nome_modelo}' (code={codigo}): {erro}",
+                    flush=True,
+                )
+                if codigo in (404, 500, 503) and indice < len(fila_modelos) - 1:
+                    time.sleep(1)
+                    continue
+                raise _traduzir_erro(erro) from erro
+
+    if resposta is None and ultimo_erro is not None:
+        raise _traduzir_erro(ultimo_erro) from ultimo_erro
 
     texto = getattr(resposta, "text", None)
     if not texto:
