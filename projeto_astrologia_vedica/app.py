@@ -338,7 +338,7 @@ if mapa:
             f'**Ascendente:** {asc["grau_no_signo_dms"]} de {asc["signo"]} · '
             f'Nakshatra {asc["nakshatra"]}, pada {asc["pada"]}'
         )
-                st.subheader("Os nove Grahas")
+        st.subheader("Os nove Grahas")
         st.dataframe(tabela_grahas(mapa), hide_index=True)
         st.subheader("As doze casas (Whole Sign)")
         st.dataframe(tabela_casas(mapa), hide_index=True)
